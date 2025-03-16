@@ -7,9 +7,8 @@ import {
 export abstract class ClassValidatorFields<PropsValidated>
   implements ValidatorFieldsInterface<PropsValidated>
 {
-
-  errors: FieldsErrors = {}
-  validatedData: PropsValidated
+  errors?: FieldsErrors
+  validatedData?: PropsValidated
 
   validate(data: any): boolean {
       const errors = validateSync(data)
@@ -22,6 +21,7 @@ export abstract class ClassValidatorFields<PropsValidated>
         }
       } else {
         this.validatedData = data
+        this.errors = undefined;
       }
       return !errors.length
   }
