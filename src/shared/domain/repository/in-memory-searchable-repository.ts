@@ -51,12 +51,22 @@ export abstract class InMemorySearchableRepository<E extends Entity>
       return items
     }
     return [...items].sort((a, b) => {
+      // Ordenação principal pelo campo `sort`
       if (a.props[sort] < b.props[sort]) {
         return sortDir === 'asc' ? -1 : 1
       }
       if (a.props[sort] > b.props[sort]) {
         return sortDir === 'asc' ? 1 : -1
       }
+
+      // Em caso de empate, ordena por `price` como critério secundário
+      if (a.props.price < b.props.price) {
+        return -1
+      }
+      if (a.props.price > b.props.price) {
+        return 1
+      }
+      // Se ainda houver empate, mantém a ordem original
       return 0
     })
   }
