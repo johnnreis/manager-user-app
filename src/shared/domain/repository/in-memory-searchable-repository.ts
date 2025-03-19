@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Entity } from '../entities/entity'
 import { InMemoryRepository } from './in-memory.repository'
 import { SearchableRepositoryInterface } from './searchable-repository-contracts'
