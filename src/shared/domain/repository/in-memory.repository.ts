@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/require-await */
-/* eslint-disable @typescript-eslint/await-thenable */
 import { NotFoundError } from '@/shared/errors/not-found-error'
 import { Entity } from '../entities/entity'
 import { RepositoryInterface } from './repository-contract'
