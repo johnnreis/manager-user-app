@@ -32,12 +32,89 @@ describe('InMemoryRepository unit tests', () => {
   })
 
   describe('applyFilter method', () => {
-    it('should ', () => {})
+    it('should no filter items when filter param is null', async () => {
+      const items = [new StubEntity({ name: 'name value', price: 50 })]
+      const spyFilterMethod = jest.spyOn(items, 'filter')
+      const itemsFiltered = await sut['applyFilter'](items, null)
+      expect(itemsFiltered).toStrictEqual(items)
+      expect(spyFilterMethod).not.toHaveBeenCalled()
+    })
+
+    it('should filter using a filter param', async () => {
+      const items = [
+        new StubEntity({ name: 'name value', price: 20 }),
+        new StubEntity({ name: 'other name', price: 30 }),
+        new StubEntity({ name: 'test', price: 40 }),
+        new StubEntity({ name: 'TEST', price: 50 }),
+      ]
+      const spyFilterMethod = jest.spyOn(items, 'filter')
+      let itemsFiltered = await sut['applyFilter'](items, 'TEST')
+      expect(itemsFiltered).toStrictEqual([items[2], items[3]])
+      expect(spyFilterMethod).toHaveBeenCalledTimes(1)
+
+      itemsFiltered = await sut['applyFilter'](items, 'test')
+      expect(itemsFiltered).toStrictEqual([items[2], items[3]])
+      expect(spyFilterMethod).toHaveBeenCalledTimes(2)
+
+      itemsFiltered = await sut['applyFilter'](items, 'no-filter')
+      expect(itemsFiltered).toHaveLength(0)
+      expect(spyFilterMethod).toHaveBeenCalledTimes(3)
+    })
   })
 
-  describe('applySort method', () => {})
+  describe('applySort method', () => {
+    it('should no sort items', async () => {
+      const items = [
+        new StubEntity({ name: 'a', price: 20 }),
+        new StubEntity({ name: 'b', price: 30 }),
+      ]
+      let itemsSorted = await sut['applySort'](items, null, null)
+      expect(itemsSorted).toStrictEqual(items)
 
-  describe('applyPaginate method', () => {})
+      itemsSorted = await sut['applySort'](items, 'price', 'asc')
+      expect(itemsSorted).toStrictEqual(items)
+    })
+
+    it('should sort items', async () => {
+      const items = [
+        new StubEntity({ name: 'b', price: 60 }),
+        new StubEntity({ name: 'a', price: 60 }),
+        new StubEntity({ name: 'c', price: 60 }),
+      ]
+
+      // Ordenação ascendente por `name` e, em caso de empate, por `price`
+      let itemsSorted = await sut['applySort'](items, 'name', 'asc')
+      expect(itemsSorted).toStrictEqual([items[1], items[0], items[2]])
+
+      // Ordenação descendente por `name` e, em caso de empate, por `price`
+      itemsSorted = await sut['applySort'](items, 'name', 'desc')
+      expect(itemsSorted).toStrictEqual([items[2], items[0], items[1]])
+    })
+  })
+
+  describe('applyPaginate method', () => {
+    it('should paginate items', async () => {
+      const items = [
+        new StubEntity({ name: 'a', price: 60 }),
+        new StubEntity({ name: 'b', price: 60 }),
+        new StubEntity({ name: 'c', price: 60 }),
+        new StubEntity({ name: 'd', price: 60 }),
+        new StubEntity({ name: 'e', price: 60 }),
+      ]
+
+      let itemsPaginated = await sut['applyPaginate'](items, 1, 2)
+      expect(itemsPaginated).toStrictEqual([items[0], items[1]])
+
+      itemsPaginated = await sut['applyPaginate'](items, 2, 2)
+      expect(itemsPaginated).toStrictEqual([items[2], items[3]])
+
+      itemsPaginated = await sut['applyPaginate'](items, 3, 2)
+      expect(itemsPaginated).toStrictEqual([items[4]])
+
+      itemsPaginated = await sut['applyPaginate'](items, 4, 2)
+      expect(itemsPaginated).toStrictEqual([])
+    })
+  })
 
   describe('search method', () => {})
 })
